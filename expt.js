@@ -6,6 +6,7 @@ const height = canvas.height = window.innerHeight;
 
 var count = 0;
 const para = document.querySelector('p');
+const t = document.getElementById('t');
 
 function random(min,max) {
   const num = Math.floor(Math.random()*(max-min)) + min;
@@ -62,7 +63,7 @@ function Ball(x, y, velX, velY, exists, color, size) {
       );
       count++;
       balls.push(newBall);
-      para.textContent = "Ball count: "+count;
+      //para.textContent = "Ball count: "+count;
   }
 
   Ball.prototype.collisionDetect = function(){
@@ -107,13 +108,13 @@ EvilCircle.prototype.checkBounds = function() {
 EvilCircle.prototype.setControls = function() {
     let _this = this;
     window.onkeydown = function(e) {
-    if (e.key === 'a') {
+    if (e.key === 'a' || e.keyCode == 37) {
       _this.x -= _this.velX;
-    } else if (e.key === 'd') {
+    } else if (e.key === 'd' || e.keyCode == 39) {
       _this.x += _this.velX;
-    } else if (e.key === 'w') {
+    } else if (e.key === 'w' || e.keyCode == 38) {
       _this.y -= _this.velY;
-    } else if (e.key === 's') {
+    } else if (e.key === 's' || e.keyCode == 40) {
       _this.y += _this.velY;
     }
   }
@@ -133,11 +134,23 @@ EvilCircle.prototype.collisionDetect = function(){
     }
 }
 
+function getModifiedTime(t){
+  if(t<60){return t+"s";}
+  else{return (Math.floor(t/60))+"m "+(t%60)+"s";}
+}
+
 let evil = new EvilCircle(random(0,width), random(0,height), true);
 evil.setControls();
-
+var time=0;
+const start = new Date().getTime();
   function loop() {
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+    if(count!=0){
+      time = (new Date().getTime()) - start;
+      t.textContent = "Time: "+getModifiedTime(Math.floor(time/1000));
+    }
+    else {const endTime = getModifiedTime(Math.floor(time/1000)); t.textContent = "Time taken: "+endTime;}
+
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
     ctx.fillRect(0, 0, width, height);
 
     for (let i = 0; i < balls.length; i++) {
@@ -146,7 +159,7 @@ evil.setControls();
             balls[i].update();
             balls[i].collisionDetect();
         }
-        if(count==0){para.textContent = "You win!";}
+        if(count==0){ para.textContent = "You win!"; break; }
     }
     
     evil.draw()
@@ -154,6 +167,7 @@ evil.setControls();
     evil.collisionDetect();
 
     requestAnimationFrame(loop);
+    
   }
-
-  loop();
+//loop();
+  document.body.onkeyup = function(e){ if(e.keyCode == 32){ para.textContent = "Ball count: "+count; loop(); }}
