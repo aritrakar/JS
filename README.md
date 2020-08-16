@@ -1,2 +1,2 @@
 # JS
-Some simple stuff created mainly with JavaScript.
+Some simple projects created mainly with JavaScript.
